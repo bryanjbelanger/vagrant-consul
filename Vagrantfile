@@ -6,28 +6,6 @@
 # backwards compatibility). Please don't change it unless you know what
 # you're doing.
 Vagrant.configure('2') do |config|
-  # Synched Folder.
-  synched_opts = { nfs: true }
-  nfs_exports = [
-    'rw',
-    'noac',
-    'actimeo=0',
-    'intr',
-    'async',
-    'insecure',
-    'no_subtree_check',
-    'noacl',
-    'lookupcache=none'
-  ]
-
-  if RUBY_PLATFORM =~ /darwin/
-    nfs_exports << 'maproot=0:0'
-    synched_opts[:bsd__nfs_options] = nfs_exports
-  elsif RUBY_PLATFORM =~ /linux/
-    nfs_exports << 'no_root_squash'
-    synched_opts[:linux__nfs_options] = nfs_exports
-  end
-
   # The most common configuration options are documented and commented below.
   # For a complete reference, please see the online documentation at
   # https://docs.vagrantup.com.
@@ -72,6 +50,14 @@ Vagrant.configure('2') do |config|
     prl.cpus = 1
   end
 
+  config.vm.provider 'vmware_fusion' do |vmw|
+    vmw.vmx['memsize'] = 512
+  end
+
+  config.vm.provider 'virtualbox' do |vb|
+    vb.memory = 512
+  end
+
   # config.vm.provider 'vmware_fusion' do |v|
   #   # Customize the amount of memory on the VM:
   #   v.vmx['memsize'] = 1024
@@ -90,10 +76,6 @@ SCRIPT
                       inline: install_puppet_script
 
   config.vm.define :consul0 do |consul0|
-    consul0.vm.provider 'vmware_fusion' do |v|
-      v.vmx['memsize'] = 1024
-    end
-
     consul0.vm.network 'private_network', ip: '10.20.1.4'
 
     # Provision the database
@@ -104,6 +86,19 @@ SCRIPT
 
     consul0.vm.provision :shell,
                          inline: install_consul0
+  end
+
+  config.vm.define :consul1 do |consul1|
+    consul1.vm.network 'private_network', ip: '10.20.1.5'
+
+    # Provision the database
+    install_consul1 = <<SCRIPT
+/opt/puppetlabs/bin/puppet module install KyleAnderson/consul
+/opt/puppetlabs/bin/puppet apply /vagrant/manifests/consul0.pp --modulepath=/etc/puppetlabs/code/environments/production/modules
+SCRIPT
+
+    consul0.vm.provision :shell,
+                         inline: install_consul1
   end
 
   # Define a Vagrant Push strategy for pushing to Atlas. Other push strategies
