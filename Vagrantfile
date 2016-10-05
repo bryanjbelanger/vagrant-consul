@@ -12,7 +12,7 @@ Vagrant.configure('2') do |config|
 
   # Every Vagrant development environment requires a box. You can search for
   # boxes at https://atlas.hashicorp.com/search.
-  config.vm.box = 'bento/centos-7.2'
+  config.vm.box = 'puppetlabs/centos-7.2-64-puppet'
   # config.vm.box = 'rhel6-nitc-40g'
   # config.vm.provision :hosts, sync_hosts: true
 
@@ -94,7 +94,7 @@ SCRIPT
     # Provision the database
     install_consul1 = <<SCRIPT
 /opt/puppetlabs/bin/puppet module install KyleAnderson/consul
-/opt/puppetlabs/bin/puppet apply /vagrant/manifests/consul0.pp --modulepath=/etc/puppetlabs/code/environments/production/modules
+/opt/puppetlabs/bin/puppet apply /vagrant/manifests/consul1.pp --modulepath=/etc/puppetlabs/code/environments/production/modules
 SCRIPT
 
     consul0.vm.provision :shell,
