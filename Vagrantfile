@@ -12,7 +12,7 @@ Vagrant.configure('2') do |config|
 
   # Every Vagrant development environment requires a box. You can search for
   # boxes at https://atlas.hashicorp.com/search.
-  config.vm.box = 'puppetlabs/centos-7.0-64-nocm'
+  config.vm.box = 'puppetlabs/centos-7.2-64-nocm'
   # config.vm.box = 'rhel6-nitc-40g'
   # config.vm.provision :hosts, sync_hosts: true
 
